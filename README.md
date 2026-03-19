@@ -37,7 +37,7 @@ apps/
   api-e2e/      Jest integration tests for api
   admin-api/    NestJS 11 internal/admin REST API         → dev: 3001, docker: 3001
   admin-api-e2e/ Jest integration tests for admin-api
-packages/
+libs/
   shared-types/ Shared TypeScript types and DTOs          → @org/shared-types
 ```
 
@@ -121,7 +121,7 @@ The `@org/shared-types` package is the single source of truth for DTOs shared ac
 import { CreateUserDto, UserResponseDto } from '@org/shared-types';
 ```
 
-Add new shared types in `packages/shared-types/src/lib/dto.ts` and export from `packages/shared-types/src/index.ts`.
+Add new shared types in `libs/shared-types/src/lib/dto.ts` and export from `libs/shared-types/src/index.ts`.
 
 ## Adding New Apps or Libraries
 
@@ -133,7 +133,7 @@ yarn nx g @nx/nest:app --name=<name> --directory=apps/<name>
 yarn nx g @nx/react:app --name=<name> --directory=apps/<name> --bundler=vite --unitTestRunner=vitest
 
 # New shared library
-yarn nx g @nx/js:lib --name=<name> --directory=packages/<name> --bundler=tsc --unitTestRunner=vitest
+yarn nx g @nx/js:lib --name=<name> --directory=libs/<name> --bundler=tsc --unitTestRunner=vitest
 ```
 
 ## Nx Cloud

@@ -23,7 +23,7 @@ nx-sample/
 │   ├── api-e2e/      Jest integration tests for api
 │   ├── admin-api/    NestJS 11 (admin REST API)       → port 3001
 │   └── admin-api-e2e/  Jest integration tests for admin-api
-└── packages/
+└── libs/
     └── shared-types/ Shared TypeScript types/DTOs     (@org/shared-types)
 ```
 
@@ -154,7 +154,7 @@ npx nx g @nx/react:app --name=<app-name> --directory=apps/<app-name> --bundler=v
 
 ### New Shared Library
 ```bash
-npx nx g @nx/js:lib --name=<lib-name> --directory=packages/<lib-name> --bundler=tsc --unitTestRunner=vitest
+npx nx g @nx/js:lib --name=<lib-name> --directory=libs/<lib-name> --bundler=tsc --unitTestRunner=vitest
 ```
 
 Import shared libraries using the `@org/<lib-name>` alias (auto-configured in `tsconfig.json`).
@@ -163,15 +163,15 @@ Import shared libraries using the `@org/<lib-name>` alias (auto-configured in `t
 
 ## Shared Types
 
-The `@org/shared-types` package (`packages/shared-types/`) is the single source of truth for DTOs and interfaces shared across the frontend and backends.
+The `@org/shared-types` package (`libs/shared-types/`) is the single source of truth for DTOs and interfaces shared across the frontend and backends.
 
 ```typescript
 import { CreateUserDto, UserResponseDto } from '@org/shared-types';
 ```
 
 When adding new types:
-1. Add the type/interface to `packages/shared-types/src/lib/dto.ts` (or create a new file)
-2. Export it from `packages/shared-types/src/index.ts`
+1. Add the type/interface to `libs/shared-types/src/lib/dto.ts` (or create a new file)
+2. Export it from `libs/shared-types/src/index.ts`
 3. Both NestJS apps and the React app can import it immediately
 
 ---
@@ -191,7 +191,7 @@ This workspace uses **ESLint 9 flat config** (`eslint.config.mjs`). There is **n
 | Decision | Rationale |
 |----------|-----------|
 | Two NestJS APIs | Separate public (`api`) and admin (`admin-api`) concerns; different auth policies, rate limits |
-| `packages/` for shared libs | Matches Yarn workspace glob; keeps libs separate from apps |
+| `libs/` for shared libs | Matches Yarn workspace glob; keeps libs separate from apps |
 | Build-outside Docker | Nx handles incremental builds; Docker images stay thin and promotable |
 | Nx 22 prune targets | Native Nx prune pipeline; no extra tooling for minimal production images |
 | Vitest for unit tests | Vite-native, fast, single runner for both frontend and Node |

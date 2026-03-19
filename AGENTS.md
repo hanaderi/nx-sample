@@ -38,7 +38,7 @@ apps/
   api-e2e/       Jest integration tests
   admin-api/     NestJS 11 admin API     (port 3001)
   admin-api-e2e/ Jest integration tests
-packages/
+libs/
   shared-types/  Shared TS types/DTOs   (@org/shared-types)
 ```
 
@@ -95,7 +95,7 @@ This workspace uses **ESLint 9 flat config**. Configuration files are named `esl
 |------|------|--------|
 | Frontend unit | Vitest (jsdom) | `apps/web/**/*.spec.{ts,tsx}` |
 | Backend unit | Vitest (node) | `apps/api/**/*.spec.ts` |
-| Shared lib unit | Vitest | `packages/**/*.spec.ts` |
+| Shared lib unit | Vitest | `libs/**/*.spec.ts` |
 | Frontend E2E | Playwright | `apps/web-e2e/src/**/*.spec.ts` |
 | API integration | Jest | `apps/api-e2e/src/**/*.spec.ts` |
 
@@ -133,4 +133,4 @@ When adding a new NestJS app, the generator automatically adds `prune-lockfile`,
 - **Don't** use `npm` or `pnpm` — this repo uses **Yarn**
 - **Don't** create `.eslintrc.json` — ESLint 9 flat config only
 - **Don't** build Docker images without running `prune` first on NestJS apps — the Dockerfile expects `dist/package.json` to exist
-- Shared libraries live in `packages/` not `libs/` (matches the Yarn workspace glob)
+- Shared libraries live in `libs/` not `packages/` (matches the Yarn workspace glob)

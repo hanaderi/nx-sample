@@ -22,7 +22,7 @@
       "path": "./apps/admin-api"
     },
     {
-      "path": "./packages/shared-types"
+      "path": "./libs/shared-types"
     }
   ]
 }
