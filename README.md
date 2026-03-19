@@ -1,105 +1,147 @@
-# New Nx Repository
+# nx-sample
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Production-ready **Nx 22** monorepo — React 19 frontend, two NestJS 11 backends, and shared TypeScript types. Uses Yarn workspaces, Vitest for unit tests, Playwright for E2E, and a Docker build-outside strategy.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Prerequisites
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
-## Try the full Nx platform
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
-## Generate a library
+| Tool | Version |
+|------|---------|
+| Node.js | 22 LTS |
+| Yarn | 1.x |
+| Docker | 24+ |
+| Docker Compose | 2.x |
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+## Getting Started
+
+```bash
+# Install dependencies
+yarn install
+
+# Start frontend dev server (localhost:4200)
+yarn nx serve web
+
+# Start public API dev server (localhost:3000)
+yarn nx serve api
+
+# Start admin API dev server (localhost:3001)
+yarn nx serve admin-api
 ```
 
-## Run tasks
-
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+## Project Structure
 
 ```
-npx nx release
+apps/
+  web/          React 19 + Vite 7 SPA                    → dev: 4200, docker: 8080
+  web-e2e/      Playwright E2E for web
+  api/          NestJS 11 public REST API                 → dev: 3000, docker: 3000
+  api-e2e/      Jest integration tests for api
+  admin-api/    NestJS 11 internal/admin REST API         → dev: 3001, docker: 3001
+  admin-api-e2e/ Jest integration tests for admin-api
+packages/
+  shared-types/ Shared TypeScript types and DTOs          → @org/shared-types
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+## Nx Task Reference
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# Build
+yarn nx run-many -t build                # Build all apps and libs
+yarn nx build web                        # Build web app
+yarn nx build api                        # Build api
+yarn nx build admin-api                  # Build admin-api
 
-## Keep TypeScript project references up to date
+# Test
+yarn nx run-many -t test                 # All unit tests
+yarn nx test web                         # Web unit tests (Vitest)
+yarn nx test api                         # API unit tests (Vitest)
+yarn nx run web-e2e:e2e                  # Web E2E (Playwright)
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+# Lint
+yarn nx run-many -t lint                 # Lint everything
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+# Typecheck
+yarn nx run-many -t typecheck            # TypeScript check all projects
 
-```sh
-npx nx sync
+# Visualize the project graph
+yarn nx graph
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+## Docker Workflow
 
-```sh
-npx nx sync:check
+This repo uses a **build-outside** strategy. Dockerfiles copy pre-built `dist/` artifacts — they do not compile code.
+
+### Build & Run All Services
+
+```bash
+# 1. Build all applications
+yarn nx run-many -t build
+
+# 2. Run the prune pipeline for each NestJS app
+#    (generates pruned package.json + lockfile + workspace modules)
+yarn nx run api:prune
+yarn nx run admin-api:prune
+
+# 3. Build Docker images (or run all at once)
+yarn nx run-many -t docker-build
+
+# 4. Start all services
+docker-compose up
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+### Individual Image Builds
+
+```bash
+yarn nx run web:docker-build        # web  → nginx:alpine image
+yarn nx run api:docker-build        # api  → node:22-alpine image
+yarn nx run admin-api:docker-build  # admin-api → node:22-alpine image
+```
+
+### Docker Compose Commands
+
+```bash
+docker-compose up           # Start all services (foreground)
+docker-compose up -d        # Start in background
+docker-compose logs -f      # Follow logs
+docker-compose down         # Stop all services
+```
+
+### Service URLs
+
+| Service | URL |
+|---------|-----|
+| web | http://localhost:8080 |
+| api | http://localhost:3000 |
+| admin-api | http://localhost:3001 |
+
+## Shared Types
+
+The `@org/shared-types` package is the single source of truth for DTOs shared across all apps:
+
+```typescript
+import { CreateUserDto, UserResponseDto } from '@org/shared-types';
+```
+
+Add new shared types in `packages/shared-types/src/lib/dto.ts` and export from `packages/shared-types/src/index.ts`.
+
+## Adding New Apps or Libraries
+
+```bash
+# New NestJS app
+yarn nx g @nx/nest:app --name=<name> --directory=apps/<name>
+
+# New React app
+yarn nx g @nx/react:app --name=<name> --directory=apps/<name> --bundler=vite --unitTestRunner=vitest
+
+# New shared library
+yarn nx g @nx/js:lib --name=<name> --directory=packages/<name> --bundler=tsc --unitTestRunner=vitest
+```
 
 ## Nx Cloud
 
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+To enable remote caching and distributed CI, connect this workspace:
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Set up CI (non-Github Actions CI)
-
-**Note:** This is only required if your CI provider is not GitHub Actions.
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+yarn nx connect
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+See [Nx Cloud docs](https://nx.dev/ci/intro/why-nx-cloud) for details.
