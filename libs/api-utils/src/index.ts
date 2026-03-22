@@ -1,3 +1,3 @@
-export { HealthModule } from './lib/health.module.js';
-export { HealthService } from './lib/health.service.js';
-export type { HealthStatusDto } from './lib/dto/health.dto.js';
+export { HealthModule } from './lib/health.module';
+export { HealthService } from './lib/health.service';
+export type { HealthStatusDto } from './lib/dto/health.dto';

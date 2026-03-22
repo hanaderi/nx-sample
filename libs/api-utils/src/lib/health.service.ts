@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { HealthStatusDto } from './dto/health.dto.js';
-import { HEALTH_OPTIONS } from './health.constants.js';
-import type { HealthModuleOptions } from './health.module.js';
+import type { HealthStatusDto } from './dto/health.dto';
+import { HEALTH_OPTIONS } from './health.constants';
+import type { HealthModuleOptions } from './health.module';
 
 @Injectable()
 export class HealthService {

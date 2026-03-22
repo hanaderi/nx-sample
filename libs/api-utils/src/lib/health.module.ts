@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { HealthController } from './health.controller.js';
-import { HealthService } from './health.service.js';
-import { HEALTH_OPTIONS } from './health.constants.js';
+import { HealthController } from './health.controller';
+import { HealthService } from './health.service';
+import { HEALTH_OPTIONS } from './health.constants';
 
 export interface HealthModuleOptions {
   /** Message returned by GET /api/status — configure per-app */
