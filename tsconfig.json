@@ -10,19 +10,16 @@
       "path": "./apps/web"
     },
     {
-      "path": "./apps/api-e2e"
-    },
-    {
       "path": "./apps/api"
-    },
-    {
-      "path": "./apps/admin-api-e2e"
     },
     {
       "path": "./apps/admin-api"
     },
     {
       "path": "./libs/shared-types"
+    },
+    {
+      "path": "./libs/api-utils"
     }
   ]
 }
