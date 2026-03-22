@@ -18,6 +18,27 @@
         "production": {}
       }
     },
+    "serve": {
+      "continuous": true,
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "tsc --watch --preserveWatchOutput",
+          "node --watch dist/main.js"
+        ],
+        "parallel": true,
+        "cwd": "apps/api"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "options": {
+        "command": "vitest run --config ../../vitest.config.node.mts --root .",
+        "cwd": "apps/api"
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
@@ -49,24 +70,6 @@
       "options": {
         "command": "docker build -f apps/api/Dockerfile -t nx-sample-api:latest .",
         "cwd": "{workspaceRoot}"
-      }
-    },
-    "serve": {
-      "continuous": true,
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
-      "options": {
-        "buildTarget": "api:build",
-        "runBuildTargetDependencies": true
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api:build:development"
-        },
-        "production": {
-          "buildTarget": "api:build:production"
-        }
       }
     }
   }
