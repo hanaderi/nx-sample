@@ -1,0 +1,7 @@
+FROM nginx:alpine
+ARG APP_PATH
+WORKDIR /usr/share/nginx/html
+COPY apps/${APP_PATH}/dist .
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
