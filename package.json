@@ -2,7 +2,18 @@
   "name": "@org/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx run-many -t serve --projects=web,api,admin-api --parallel=3",
+    "serve": "nx run-many -t serve --projects=web,api,admin-api --parallel=3",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "e2e": "nx e2e web-e2e",
+    "affected:build": "nx affected -t build",
+    "affected:test": "nx affected -t test",
+    "affected:lint": "nx affected -t lint"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^11.0.0",
