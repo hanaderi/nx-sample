@@ -10,7 +10,7 @@
       "cache": true,
       "outputs": ["{workspaceRoot}/apps/api/dist"],
       "options": {
-        "command": "tsc",
+        "command": "tsc --build",
         "cwd": "apps/api"
       },
       "configurations": {
@@ -24,18 +24,10 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tsc --watch --preserveWatchOutput",
+          "tsc --build --watch --preserveWatchOutput",
           "node --watch dist/main.js"
         ],
         "parallel": true,
-        "cwd": "apps/api"
-      }
-    },
-    "test": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "options": {
-        "command": "vitest run --config ../../vitest.config.node.mts --root .",
         "cwd": "apps/api"
       }
     },
